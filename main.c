@@ -102,7 +102,28 @@ void enterClaimGraph(){
     }
     printData(1);
 }
-void requestResource(){ }
+void requestResource(){
+    //todo check for invalid entries
+    char processID[10];
+    int processNum;
+    printf("Enter requesting process: \n");
+    scanf("%9s", &processID);
+    if(sscanf(processID,"%*[^0-9]%d", &processNum) == 1){
+        printf("Process number is: %d\n", processNum);
+    }
+
+    //requested resources
+    char resourceID[10];
+    int resourceNum;
+    printf("Enter requested resource: \n");
+    scanf("%9s", &resourceID);
+    sscanf(resourceID, "%*[^0-9]%d", &resourceNum);
+
+    //units
+    int units;
+    printf("Enter number of units process p2 is requesting from resource r0: \n");
+    scanf("%d",&units);
+}
 void releaseResource(){}
 void determineSafeSequence(){}
 void quit(){
@@ -123,7 +144,7 @@ int main() {
                "5) Quit program\n"
                "\nEnter Selection:");
         scanf("%d", &input);
-
+        printf("\n");
         switch (input) {
             case 1:
                 enterClaimGraph();
