@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+
 #define Max_Resources 25
 #define Max_Processes 25
 
@@ -11,6 +13,7 @@ int allocated[Max_Processes][Max_Resources];
 int need[Max_Processes][Max_Resources];
 void printData(int choice) {
     //todo fix spacing
+    printf("\n");
     if (choice) {
         printf("\nResources: \n");
         for (int i = 0; i < totalR; i++) {
@@ -26,7 +29,7 @@ void printData(int choice) {
         printf("\n   ");
     }
     //available
-    printf("\n\nAvailable:\n   ");
+    printf("Available:\n   ");
     for (int i = 0; i < totalR; i++) {
         printf("%6s%d", "r", i);
     }
@@ -109,9 +112,8 @@ void requestResource(){
     int processNum;
     printf("Enter requesting process: \n");
     scanf("%9s", &processID);
-    if(sscanf(processID,"%*[^0-9]%d", &processNum) == 1){
-        printf("Process number is: %d\n", processNum);
-    }
+    sscanf(processID,"%*[^0-9]%d", &processNum);
+
 
     //requested resources
     char resourceID[10];
@@ -122,10 +124,10 @@ void requestResource(){
 
     //units
     int units;
-    printf("Enter number of units process p2 is requesting from resource r0: \n");
+    printf("Enter number of units process p%d is requesting from resource r0: \n",processNum);
     scanf("%d",&units);
     // take away units from available and need. add the same units back to allocated
-    if (available[resourceNum]-units >0 || need[processNum][resourceNum]-units >0){
+    if (available[resourceNum]-units >= 0 && need[processNum][resourceNum]-units >= 0){
         available[resourceNum] -= units;
         need[processNum][resourceNum]-=units;
         allocated[processNum][resourceNum]+=units;
@@ -135,8 +137,82 @@ void requestResource(){
     //print graph
     printData(0);
 }
-void releaseResource(){}
-void determineSafeSequence(){}
+void releaseResource(){
+    //todo check for invalid entries
+    char processID[10];
+    int processNum;
+    printf("Enter releasing processor: \n");
+    scanf("%9s", &processID);
+    sscanf(processID,"%*[^0-9]%d", &processNum);
+    //requested resources
+    char resourceID[10];
+    int resourceNum;
+    printf("Enter released resource: \n");
+    scanf("%9s", &resourceID);
+    sscanf(resourceID, "%*[^0-9]%d", &resourceNum);
+
+    //units
+    int units;
+    printf("Enter number of units process p%d is requesting from resource r0: \n",processNum);
+    scanf("%d",&units);
+    // take away units from available and need. add the same units back to allocated
+    //todo what if allocated increases maxClaim
+    if (allocated[processNum][resourceNum] - units>= 0){
+        available[resourceNum] += units;
+        need[processNum][resourceNum]+=units;
+        allocated[processNum][resourceNum]-= units;
+    }
+    printData(0);
+}
+void determineSafeSequence(){
+    if(totalP == 0) {return;}
+    bool safe[Max_Processes] = {false}; // Can be sequenced
+    int safeSequence[Max_Processes]; // Store safe sequences
+    int count = 0;
+    int avail[Max_Resources];
+    for(int i =0; i <totalR;i++){
+        avail[i] = available[i];
+    }
+
+    while(count < totalP) {
+        bool found = false;
+        for(int p = 0; p < totalP; p++) {
+            if (!safe[p]) {
+                bool possible = true;
+                printf("Comparing: < ");
+                for(int r = 0; r < totalR; r++) {
+                    printf("%d ",need[p][r]);
+                    if(need[p][r] > avail[r]) {
+                        possible = false;
+                    }
+                }
+                printf("> <= < ");
+
+                for(int r = 0; r< totalR; r++){
+                    printf("%d ",avail[r]);
+                }
+                printf("> : Process p%d ",p);
+                possible ? printf("can ") : printf("cannot ");
+                printf("be sequenced\n");
+                if(possible) {
+                    for(int r = 0; r < totalR; r++)
+                        avail[r] += allocated[p][r];
+
+                    safeSequence[count++] = p;
+                    safe[p] = true; // set as safe
+                    found = true;
+                }
+            }
+        }
+    }
+
+    // If we reach here, then the system is in a safe state.
+    printf("Safe sequence of processes:");
+    for(int i = 0; i < totalP; i++)
+        printf(" p%d ", safeSequence[i]);
+    printf("\n");
+}
+
 void quit(){
     exit(0);
 }
