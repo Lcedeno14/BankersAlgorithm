@@ -9,9 +9,9 @@ int available[Max_Resources];
 int maxClaim[Max_Processes][Max_Resources];
 int allocated[Max_Processes][Max_Resources];
 int need[Max_Processes][Max_Resources];
-void printData(int choice){
+void printData(int choice) {
     //todo fix spacing
-    if(choice) {
+    if (choice) {
         printf("\nResources: \n");
         for (int i = 0; i < totalR; i++) {
             printf("%6s%d", "r", i);
@@ -19,13 +19,13 @@ void printData(int choice){
         printf("\n");
 
         for (int i = 0; i < totalR; i++) {
-            if(!i ) {
+            if (!i) {
                 printf("%8d", resource[i]);
-            }
-            else{printf("%6d", resource[i]);}
+            } else { printf("%6d", resource[i]); }
         }
         printf("\n   ");
     }
+    //available
     printf("\n\nAvailable:\n   ");
     for (int i = 0; i < totalR; i++) {
         printf("%6s%d", "r", i);
@@ -35,18 +35,19 @@ void printData(int choice){
         printf("%7d", available[i]);
     }
 
-    // Max Claim
-    printf("\n\nMax Claim:\n    ");
-    for (int i = 0; i < totalR; i++) {
-        printf("%6s%d", "r", i);
-    }
-    for (int i = 0; i < totalP; i++) {
-        printf("\np%d ", i);
-        for (int j = 0; j < totalR; j++) {
-            printf("%7d", maxClaim[i][j]);
+    //Max Claim
+    if (choice) {
+        printf("\n\nMax Claim:\n    ");
+        for (int i = 0; i < totalR; i++) {
+            printf("%6s%d", "r", i);
+        }
+        for (int i = 0; i < totalP; i++) {
+            printf("\np%d ", i);
+            for (int j = 0; j < totalR; j++) {
+                printf("%7d", maxClaim[i][j]);
+            }
         }
     }
-
     // Allocated resources
     printf("\n\nAllocated:\n    ");
     for (int i = 0; i < totalR; i++) {
@@ -123,12 +124,22 @@ void requestResource(){
     int units;
     printf("Enter number of units process p2 is requesting from resource r0: \n");
     scanf("%d",&units);
+    // take away units from available and need. add the same units back to allocated
+    if (available[resourceNum]-units >0 || need[processNum][resourceNum]-units >0){
+        available[resourceNum] -= units;
+        need[processNum][resourceNum]-=units;
+        allocated[processNum][resourceNum]+=units;
+    }
+
+
+    //print graph
+    printData(0);
 }
 void releaseResource(){}
 void determineSafeSequence(){}
 void quit(){
     exit(0);
-};
+}
 
 int main() {
     int input;
