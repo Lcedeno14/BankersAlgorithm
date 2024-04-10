@@ -12,24 +12,22 @@ int maxClaim[Max_Processes][Max_Resources];
 int allocated[Max_Processes][Max_Resources];
 int need[Max_Processes][Max_Resources];
 void printData(int choice) {
-    //todo fix spacing
     printf("\n");
     if (choice) {
-        printf("\nResources: \n");
+        printf("\nResources: \n   ");
         for (int i = 0; i < totalR; i++) {
             printf("%6s%d", "r", i);
         }
-        printf("\n");
+        printf("\n  ");
 
         for (int i = 0; i < totalR; i++) {
             if (!i) {
                 printf("%8d", resource[i]);
             } else { printf("%6d", resource[i]); }
         }
-        printf("\n   ");
     }
     //available
-    printf("Available:\n   ");
+    printf("\nAvailable: \n   ");
     for (int i = 0; i < totalR; i++) {
         printf("%6s%d", "r", i);
     }
@@ -40,12 +38,12 @@ void printData(int choice) {
 
     //Max Claim
     if (choice) {
-        printf("\n\nMax Claim:\n    ");
+        printf("\n\nMax Claim:\n   ");
         for (int i = 0; i < totalR; i++) {
             printf("%6s%d", "r", i);
         }
         for (int i = 0; i < totalP; i++) {
-            printf("\np%d ", i);
+            printf("\np%d", i);
             for (int j = 0; j < totalR; j++) {
                 printf("%7d", maxClaim[i][j]);
             }
@@ -79,24 +77,24 @@ void printData(int choice) {
 void enterClaimGraph(){
     printf("Enter number of resources: \n");
     scanf("%d", &totalR);
-    printf("Enter number of units for resources (r0 to r%d): \n", totalR - 1);
+    printf("Enter number of units for resources (r0 to r%d): ", totalR - 1);
     for(int i = 0; i<totalR; i++){
         scanf("%d", &resource[i]);
         available[i]=resource[i];
     }
-    printf("Enter number of processes: \n");
+    printf("\nEnter number of processes: ");
     scanf("%d", &totalP);
     for(int i = 0; i<totalP; i++){
-        printf("Enter maximum number of units process p%d will "
-               "claim from each resource (r0 to r%d): \n", i,totalR-1);
+        printf("\nEnter maximum number of units process p%d will "
+               "claim from each resource (r0 to r%d): ", i,totalR-1);
         for(int j = 0; j<totalR; j++){
             scanf("%d", &maxClaim[i][j]);
             need[i][j] = maxClaim[i][j];
         }
     }
     for(int i = 0; i<totalP; i++){
-        printf("Enter number of units of each resource (r0 to r%d) "
-               "currently allocated to process p%d: \n", totalR-1,i);
+        printf("\nEnter number of units of each resource (r0 to r%d) "
+               "currently allocated to process p%d: ", totalR-1,i);
         for(int j = 0; j<totalR; j++){
             //todo create check for allocating more than available
             scanf("%d", &allocated[i][j]);
@@ -104,6 +102,7 @@ void enterClaimGraph(){
             available[j] -= allocated[i][j];
         }
     }
+    printf("\n");
     printData(1);
 }
 void requestResource(){
@@ -111,7 +110,7 @@ void requestResource(){
     char processID[10];
     int processNum;
     printf("Enter requesting process: \n");
-    scanf("%9s", &processID);
+    scanf("%9s", processID);
     sscanf(processID,"%*[^0-9]%d", &processNum);
 
 
@@ -119,7 +118,7 @@ void requestResource(){
     char resourceID[10];
     int resourceNum;
     printf("Enter requested resource: \n");
-    scanf("%9s", &resourceID);
+    scanf("%9s", resourceID);
     sscanf(resourceID, "%*[^0-9]%d", &resourceNum);
 
     //units
@@ -142,13 +141,13 @@ void releaseResource(){
     char processID[10];
     int processNum;
     printf("Enter releasing processor: \n");
-    scanf("%9s", &processID);
+    scanf("%9s", processID);
     sscanf(processID,"%*[^0-9]%d", &processNum);
     //requested resources
     char resourceID[10];
     int resourceNum;
     printf("Enter released resource: \n");
-    scanf("%9s", &resourceID);
+    scanf("%9s", resourceID);
     sscanf(resourceID, "%*[^0-9]%d", &resourceNum);
 
     //units
@@ -205,8 +204,6 @@ void determineSafeSequence(){
             }
         }
     }
-
-    // If we reach here, then the system is in a safe state.
     printf("Safe sequence of processes:");
     for(int i = 0; i < totalP; i++)
         printf(" p%d ", safeSequence[i]);
